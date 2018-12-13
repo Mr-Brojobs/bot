@@ -12,7 +12,7 @@ gpio.setup(blue_led,gpio.OUT)
 
 
 def buzz():
-	gpio.output(,True)
+	gpio.output(buzzer,True)
 
 
 def glow(number):

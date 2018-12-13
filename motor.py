@@ -63,12 +63,12 @@ def set_speed(motor_name, speed):
     if lower(motor_name[0])=='l':
         GPIO.output(pinc,False)
         GPIO.output(pind,False)
-             if speed>0:
-                 GPIO.output(pinc, True)
-                 c.ChangeDutyCycle(speed)
-             if speed<0:
-                 GPIO.output(pind, True)
-                 d.ChangeDutyCycle(speed)
+        if speed>0:
+            GPIO.output(pinc, True)
+            c.ChangeDutyCycle(speed)
+        if speed<0:
+            GPIO.output(pind, True)
+            d.ChangeDutyCycle(speed)
     
     if lower(motor_name[0])=='b':
         GPIO.output(pina,False)

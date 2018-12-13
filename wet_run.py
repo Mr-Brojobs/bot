@@ -4,8 +4,10 @@ import motion
 import vision
 import bot_movement
 import dry_run as dist
+import time
+from threading import Thread
 
-def wait_for_path():
+def wait_for_path(direction):
     
     
     while us.dist(us.front_trig,us.front_echo)<14  or check_for_qr():
@@ -13,9 +15,9 @@ def wait_for_path():
         pass
     print('block removed')
     time.sleep(1)
-    fthread()
+    dry_run.thread_forward(direction)
     #so that it goes to the next cell
-    time.sleep(0.75)
+    time.sleep(1)
 
 
 
@@ -34,27 +36,28 @@ def move_till(destination,direction):
 	if direction=='right':
 		first='right'
 		second='left'
-	elif direction='left':
+	elif direction=='left':
 		first='left'
-		second='left'
+		second='right'
 
 	#if first open turn right
 	if dist.check(first):
 		motion.turn(first)
-	if callable(motion.forward):
-        dist.thread_forward(first)
+	
+	#if callable(motion.forward)
+	dist.thread_forward(first)
 
      #if front blocked, check for destination
-    if not check('front'):
+	if not check('front'):
     	motion.stop()
 	    if destination=='qr':
 		    if dist.check_for_qr:
 		    	if vision.scan_qr():
-		    		wait_for_path()
+		    		wait_for_path(direction)
 		    	return True
 		elif destination=='box' or destination=='block':
 			if vision.check_for_block():
-				wait_for_path()
+				wait_for_path(direction)
 				return True
 		elif destination=='end':
 			if vision.ground_is_white():
@@ -70,6 +73,7 @@ def move_till(destination,direction):
 
 def run(qr_coordinates,box_coordinates,start_coordinates,end_coordinates):
 	#define current coordinate
+	vision.zbarcam()
 	current_coordinate=start_coordinates[0]
 	direction='right'
 	

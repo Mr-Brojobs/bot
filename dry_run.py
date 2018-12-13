@@ -5,7 +5,6 @@ import math
 from threading import Thread
 import us
 import RPi.GPIO as GPIO
-import mapping
 import wet_run
 #define variables needed
 #nodes=[]
@@ -18,6 +17,12 @@ time0=time.time()
 end_coordinates=[]
 start_coordinates=[0]
 t=0
+
+#call thread for forward
+def thread_forward(path):
+    fthread=Thread(target=motion.forward,args=[path])
+    fthread.start()
+
 #waits until block is cleared
 def wait_for_path():
 
@@ -26,19 +31,14 @@ def wait_for_path():
         pass
 
     print('block removed')
-    fthread()
+    thread_forward('right')
     #so that it goes to the next cell
-    time.sleep(0.75)
+    time.sleep(1)
 
-
-#call thread for forward
-def thread_forward(path):
-    fthread=Thread(target=motion.forward,args=[path])
-    fthread.start()
 
 #method to check for qr on box with ultrasonic
 def check_for_qr():
-    if us.dist(qr_trig,qr_echo)<23:
+    if us.dist(us.qr_trig,us.qr_echo)<23:
         return True
     else: 
         return False
@@ -87,8 +87,8 @@ def move(argument):
         motion.stop()
         motion.turn('right')
     #move forward
-    if callable(motion.forward):
-        thread_forward('right')
+    
+    thread_forward('right')
 
     if not check('front'):
         #if front is blocked, it will check for boxes 
@@ -165,9 +165,9 @@ def move(argument):
     #put condition for finishing mapping here       
 
     if ( len(qr_coordinates)==2)+(number_of_boxes==3)+ (len(end_coordinates)==1)<3:
-        move(argument)
+        return move()
     else:
-        argument= [qr_coordinates,box_coordinates,start_coordinates,end_coordinates]
+        return [qr_coordinates,box_coordinates,start_coordinates,end_coordinates]
         #buzzer.buzz()
 
     
